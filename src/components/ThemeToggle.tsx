@@ -1,26 +1,29 @@
 import React, { useEffect, useState } from 'react';
 
 export const ThemeToggle: React.FC = () => {
-  const [isLight, setIsLight] = useState<boolean>(false);
+  const [isDark, setIsDark] = useState<boolean>(true);
 
   useEffect(() => {
     // Read saved theme preference from local storage or check system preferences
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'light') {
-      setIsLight(true);
-      document.documentElement.classList.add('light-theme');
+      setIsDark(false);
+      document.documentElement.classList.remove('dark');
+    } else {
+      setIsDark(true);
+      document.documentElement.classList.add('dark');
     }
   }, []);
 
   const toggleTheme = () => {
-    if (isLight) {
-      document.documentElement.classList.remove('light-theme');
-      localStorage.setItem('theme', 'dark');
-      setIsLight(false);
-    } else {
-      document.documentElement.classList.add('light-theme');
+    if (isDark) {
+      document.documentElement.classList.remove('dark');
       localStorage.setItem('theme', 'light');
-      setIsLight(true);
+      setIsDark(false);
+    } else {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+      setIsDark(true);
     }
   };
 
@@ -31,7 +34,7 @@ export const ThemeToggle: React.FC = () => {
       aria-label="Toggle theme"
       title="Toggle Dark/Light Mode"
     >
-      {isLight ? (
+      {!isDark ? (
         // Moon Icon (Show dark theme option)
         <svg
           xmlns="http://www.w3.org/2000/svg"
