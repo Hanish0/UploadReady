@@ -7,6 +7,14 @@
   display: flex;
   flex-direction: column;
   gap: 32px;
+  transition: padding 0.3s ease;
+}
+
+@media (max-width: 640px) {
+  .app-container {
+    padding: 24px 16px;
+    gap: 24px;
+  }
 }
 
 /* Header Area */
@@ -16,6 +24,36 @@
   align-items: center;
   border-bottom: 1px solid var(--border);
   padding-bottom: 24px;
+}
+
+@media (max-width: 640px) {
+  .app-header {
+    gap: 12px;
+    padding-bottom: 16px;
+  }
+  .brand-section {
+    gap: 10px !important;
+  }
+  .logo-container {
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 12px !important;
+  }
+  .logo-svg {
+    width: 20px !important;
+    height: 20px !important;
+  }
+  .app-title-group h1 {
+    font-size: 22px !important;
+  }
+  .app-title-group p {
+    font-size: 11px !important;
+  }
+  .theme-toggle-btn {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 12px !important;
+  }
 }
 
 .brand-section {
@@ -122,11 +160,17 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 24px;
+  align-items: stretch;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .upload-section {
     grid-template-columns: 1fr;
+    gap: 16px;
+    align-items: start;
+  }
+  .upload-box {
+    min-height: 140px !important;
   }
 }
 
@@ -152,6 +196,7 @@
 
 .upload-box {
   min-height: 190px;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -370,14 +415,16 @@
 /* Main Dashboard Split Grid */
 .dashboard-grid {
   display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
+  grid-template-columns: 1fr 1fr;
   gap: 32px;
-  align-items: start;
+  align-items: stretch;
 }
 
 @media (max-width: 1024px) {
   .dashboard-grid {
     grid-template-columns: 1fr;
+    gap: 24px;
+    align-items: start;
   }
 }
 
@@ -398,7 +445,9 @@
 
 /* Extracted Fields Panel */
 .extracted-fields-panel {
-  min-height: 480px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   animation: fadeIn 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
@@ -436,14 +485,8 @@
 
 .fields-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 16px;
-}
-
-@media (max-width: 600px) {
-  .fields-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 /* Field Cards (Claymorphic) */
@@ -591,7 +634,7 @@
 .pdf-preview-panel {
   display: flex;
   flex-direction: column;
-  min-height: 480px;
+  height: 100%;
   animation: fadeIn 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
@@ -773,9 +816,16 @@
 
 .pdf-iframe {
   width: 100%;
-  height: 480px;
+  height: 520px;
   border: none;
   background: var(--background);
+  transition: height 0.3s ease;
+}
+
+@media (max-width: 640px) {
+  .pdf-iframe {
+    height: 380px;
+  }
 }
 
 /* Footer Section */
