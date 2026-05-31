@@ -97,7 +97,7 @@ export const UploadArea: React.FC<UploadAreaProps> = ({
               <line x1="12" y1="3" x2="12" y2="15" />
             </svg>
           </div>
-          <h3 className="upload-label">{label}</h3>
+          <h3 className="upload-title">{label}</h3>
           <p className="upload-desc">{description}</p>
           <button type="button" className="upload-select-btn">
             Browse Files

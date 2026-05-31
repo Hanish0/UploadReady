@@ -25,7 +25,7 @@ export const PdfPreview: React.FC<PdfPreviewProps> = ({ pdfUrl, filename, isProc
           <p className="panel-subtitle">Cleaned, merged, and ready for submission.</p>
         </div>
         {pdfUrl && (
-          <button onClick={triggerDownload} className="glow-button download-btn" title="Download final PDF">
+          <button onClick={triggerDownload} className="clay-button" style={{ padding: '0 16px', height: '38px', fontSize: '13px', borderRadius: 'var(--radius-md)' }} title="Download final PDF">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -35,6 +35,7 @@ export const PdfPreview: React.FC<PdfPreviewProps> = ({ pdfUrl, filename, isProc
               strokeLinecap="round"
               strokeLinejoin="round"
               className="download-icon"
+              style={{ width: '14px', height: '14px', marginRight: '6px' }}
             >
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
               <polyline points="7 10 12 15 17 10" />
@@ -48,9 +49,9 @@ export const PdfPreview: React.FC<PdfPreviewProps> = ({ pdfUrl, filename, isProc
       {isProcessing ? (
         <div className="preview-loading-container">
           <div className="processing-loader">
-            <div className="progress-bar-fill animate-progress"></div>
+            <div className="progress-bar-fill"></div>
           </div>
-          <p>Assembling reimbursement package...</p>
+          <p className="text-sm font-medium">Assembling reimbursement package...</p>
           <span className="loader-detail-text">Extracting: Bill Pg 3, Pg 1, Pg 4 + Payment Receipt</span>
         </div>
       ) : !pdfUrl ? (
@@ -68,7 +69,7 @@ export const PdfPreview: React.FC<PdfPreviewProps> = ({ pdfUrl, filename, isProc
             <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
             <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
           </svg>
-          <p>Generated PDF preview will appear here.</p>
+          <p className="text-sm font-medium">Generated PDF preview will appear here.</p>
         </div>
       ) : (
         <div className="pdf-frame-wrapper">
@@ -76,11 +77,13 @@ export const PdfPreview: React.FC<PdfPreviewProps> = ({ pdfUrl, filename, isProc
             <span className="pdf-filename">{filename}</span>
             <span className="badge-pages">4 Pages</span>
           </div>
-          <iframe
-            src={`${pdfUrl}#toolbar=0&navpanes=0`}
-            title="Merged PDF Preview"
-            className="pdf-iframe"
-          />
+          <div className="pdf-iframe-container">
+            <iframe
+              src={`${pdfUrl}#toolbar=0&navpanes=0`}
+              title="Merged PDF Preview"
+              className="pdf-iframe"
+            />
+          </div>
         </div>
       )}
     </div>

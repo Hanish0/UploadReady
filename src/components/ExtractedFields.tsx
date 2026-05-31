@@ -117,16 +117,25 @@ export const ExtractedFields: React.FC<ExtractedFieldsProps> = ({ fields, isLoad
 
   return (
     <div className="glass-panel extracted-fields-panel">
-      <h2 className="panel-title">Extracted Details</h2>
-      <p className="panel-subtitle">Review and copy the invoice details to your reimbursement form.</p>
+      <div>
+        <h2 className="panel-title">Extracted Details</h2>
+        <p className="panel-subtitle">Review and copy the invoice details to your reimbursement form.</p>
+      </div>
 
       {isLoading ? (
-        <div className="fields-loading-container">
-          <div className="spinner"></div>
-          <p>Extracting metadata from PDFs...</p>
+        <div className="fields-grid-skeleton">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="field-card-skeleton">
+              <div className="field-header-skeleton">
+                <div className="field-label-skeleton animate-pulse" />
+                <div className="field-copy-skeleton" />
+              </div>
+              <div className="field-value-skeleton animate-pulse" />
+            </div>
+          ))}
         </div>
       ) : !hasData ? (
-        <div className="fields-empty-container">
+        <div className="preview-empty-container">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -135,7 +144,7 @@ export const ExtractedFields: React.FC<ExtractedFieldsProps> = ({ fields, isLoad
             strokeWidth="1.5"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="empty-icon"
+            className="empty-preview-icon"
           >
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
             <polyline points="14 2 14 8 20 8" />
@@ -143,7 +152,7 @@ export const ExtractedFields: React.FC<ExtractedFieldsProps> = ({ fields, isLoad
             <line x1="9" y1="11" x2="15" y2="11" />
             <line x1="9" y1="19" x2="13" y2="19" />
           </svg>
-          <p>Upload files to see extracted data.</p>
+          <p className="text-sm font-medium">Upload statements to see extracted details.</p>
         </div>
       ) : (
         <div className="fields-grid">

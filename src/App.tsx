@@ -4,6 +4,7 @@ import { ThemeToggle } from './components/ThemeToggle';
 import { UploadArea } from './components/UploadArea';
 import { ExtractedFields } from './components/ExtractedFields';
 import { PdfPreview } from './components/PdfPreview';
+import { CloudPanel } from './components/CloudPanel';
 import {
   extractTextFromPdf,
   extractFields,
@@ -11,8 +12,10 @@ import {
   getReimbursementFilename,
 } from './utils/pdfProcessor';
 import type { ExtractedFields as FieldsType } from './utils/pdfProcessor';
+import { LayoutGrid, CloudLightning } from 'lucide-react';
 
 function App() {
+  const [activeTab, setActiveTab] = useState<'web' | 'cloud'>('web');
   const [billFile, setBillFile] = useState<File | null>(null);
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
   
@@ -145,64 +148,117 @@ function App() {
   };
 
   return (
-    <div className="app-container">
-      {/* Header section with Theme Toggle */}
-      <header className="app-header">
-        <div className="brand-section">
-          <div className="logo-container">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="logo-svg"
-            >
-              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-            </svg>
+    <div className="app-wrapper">
+      {/* Sticky Navigation Header bar */}
+      <header className="sticky-nav animate-fade-in">
+        <div className="nav-content">
+          <div className="brand-section">
+            <div className="logo-container">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="logo-svg"
+              >
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+              </svg>
+            </div>
+            <div className="app-title-group">
+              <h1 className="nav-title">UploadReady</h1>
+              <p className="nav-subtitle">Secure monthly reimbursement compiler</p>
+            </div>
           </div>
-          <div className="app-title-group">
-            <h1>UploadReady</h1>
-            <p>Simplify your monthly Airtel telecom reimbursement workflow</p>
-          </div>
+          <ThemeToggle />
         </div>
-        <ThemeToggle />
       </header>
 
-      {/* Upload Zone Row */}
-      <section className="upload-section">
-        <UploadArea
-          id="bill-upload"
-          label="Airtel Monthly Statement"
-          description="Drag & drop your statement PDF here"
-          file={billFile}
-          onFileSelect={setBillFile}
-          onFileClear={handleClearBill}
-        />
-        <UploadArea
-          id="receipt-upload"
-          label="Payment Receipt"
-          description="Drag & drop your receipt PDF here"
-          file={receiptFile}
-          onFileSelect={setReceiptFile}
-          onFileClear={handleClearReceipt}
-        />
-      </section>
+      <div className="app-container">
+        {/* Overhauled Hero Section */}
+        <section className="hero-section">
+          {activeTab === 'web' ? (
+            <>
+              <span className="hero-badge">Cloud Auto-Pilot Available</span>
+              <h1>Automate Airtel <span className="text-gradient">Reimbursements</span></h1>
+              <p>
+                Upload your monthly statement and payment receipt. We will merge them and extract key fields in-browser.
+              </p>
+            </>
+          ) : (
+            <>
+              <span className="hero-badge">Zero-Touch Background Daemon</span>
+              <h1>Cloud Auto-Pilot <span className="text-gradient">Automation</span></h1>
+              <p>
+                Deploy a secure Google Apps Script to scan Gmail, extract metrics, and email reimbursement packages automatically.
+              </p>
+            </>
+          )}
+        </section>
 
-      {/* Output Grid (Fields Card on Left, PDF Preview Card on Right) */}
-      <main className="dashboard-grid">
-        <ExtractedFields fields={extractedFields} isLoading={isExtracting} />
-        <PdfPreview pdfUrl={pdfUrl} filename={filename} isProcessing={isGenerating} />
-      </main>
+      {/* Redesigned Mode Switcher (Segmented Control) */}
+      <div className="mode-switcher-container">
+        <button
+          className={`mode-switcher-btn ${activeTab === 'web' ? 'active' : ''}`}
+          onClick={() => setActiveTab('web')}
+        >
+          <LayoutGrid className="tab-btn-icon" />
+          Interactive App
+        </button>
+        <button
+          className={`mode-switcher-btn ${activeTab === 'cloud' ? 'active' : ''}`}
+          onClick={() => setActiveTab('cloud')}
+        >
+          <CloudLightning className="tab-btn-icon" />
+          Cloud Auto-Pilot
+        </button>
+      </div>
+
+      {activeTab === 'web' ? (
+        <>
+          {/* Upload Zone Row */}
+          <section className="upload-section animate-fade-in">
+            <UploadArea
+              id="bill-upload"
+              label="Airtel Monthly Statement"
+              description="Drag & drop your statement PDF here"
+              file={billFile}
+              onFileSelect={setBillFile}
+              onFileClear={handleClearBill}
+            />
+            <UploadArea
+              id="receipt-upload"
+              label="Payment Receipt"
+              description="Drag & drop your receipt PDF here"
+              file={receiptFile}
+              onFileSelect={setReceiptFile}
+              onFileClear={handleClearReceipt}
+            />
+          </section>
+
+          {/* Output Grid (Fields Card on Left, PDF Preview Card on Right) - revealed only when both files are loaded */}
+          {billFile && receiptFile && (
+            <main className="dashboard-grid animate-fade-in">
+              <ExtractedFields fields={extractedFields} isLoading={isExtracting} />
+              <PdfPreview pdfUrl={pdfUrl} filename={filename} isProcessing={isGenerating} />
+            </main>
+          )}
+        </>
+      ) : (
+        <div className="animate-fade-in">
+          <CloudPanel defaultWorkEmail="" />
+        </div>
+      )}
 
       {/* Footer bar */}
       <footer className="app-footer">
         <p>
-          UploadReady &bull; Private and Secure (All processing happens inside your browser)
+          UploadReady &bull; 100% Private and Secure (Processed in-browser or inside your Google Account)
         </p>
       </footer>
+      </div>
     </div>
   );
 }
