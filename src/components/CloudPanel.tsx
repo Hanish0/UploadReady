@@ -581,7 +581,7 @@ function getOrCreateFolder(name) {
             <Zap className="accent-icon" />
           </div>
           <div>
-            <h3>Zero-Touch Automation Daemon</h3>
+            <h3>Cloud Auto-Pilot Setup</h3>
             <p>
               Deploy this lightweight background script to your <strong>Google Apps Script</strong> environment. It operates securely in your Google Account to scan for Airtel statements in Gmail, extract invoice metrics, compile the reimbursement PDF, and deliver it directly to your corporate inbox on your monthly schedule.
             </p>

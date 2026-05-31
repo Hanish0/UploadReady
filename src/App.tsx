@@ -189,7 +189,7 @@ function App() {
             </>
           ) : (
             <>
-              <span className="hero-badge">Zero-Touch Background Daemon</span>
+              <span className="hero-badge">Gmail & Email Automation</span>
               <h1>Cloud Auto-Pilot <span className="text-gradient">Automation</span></h1>
               <p>
                 Deploy a secure Google Apps Script to scan Gmail, extract metrics, and email reimbursement packages automatically.
