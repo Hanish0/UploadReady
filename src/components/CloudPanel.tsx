@@ -189,7 +189,7 @@ function extractTextFromPdf(pdfBlob) {
   var boundary = 'multipart_boundary_uploadready';
   var requestBody = 
     '--' + boundary + '\\r\\n' +
-    'Content-Type: application/json; charset=UTF-8\\r\\n\\r\n' +
+    'Content-Type: application/json; charset=UTF-8\\r\\n\\r\\n' +
     JSON.stringify(metadata) + '\\r\\n' +
     '--' + boundary + '\\r\\n' +
     'Content-Type: ' + pdfBlob.getContentType() + '\\r\\n\\r\\n';
@@ -382,35 +382,35 @@ function sendReimbursementEmail(recipientEmail, fields, pdfBlob) {
     '      <tbody>' +
     '        <tr style="border-bottom: 1px solid #f1f5f9;">' +
     '          <td style="padding: 12px 8px; font-weight: 600; color: #64748b; width: 40%; font-size: 14px;">Mobile Number</td>' +
-    '          <td style="padding: 12px 8px; font-weight: 700; color: #0f172a; font-size: 14px; font-family: monospace;">\\' + fields.mobileNumber + '</td>' +
+    '          <td style="padding: 12px 8px; font-weight: 700; color: #0f172a; font-size: 14px; font-family: monospace;">' + fields.mobileNumber + '</td>' +
     '        </tr>' +
     '        <tr style="border-bottom: 1px solid #f1f5f9;">' +
     '          <td style="padding: 12px 8px; font-weight: 600; color: #64748b; font-size: 14px;">Invoice Number</td>' +
-    '          <td style="padding: 12px 8px; font-weight: 700; color: #0f172a; font-size: 14px; font-family: monospace;">\\' + fields.invoiceNumber + '</td>' +
+    '          <td style="padding: 12px 8px; font-weight: 700; color: #0f172a; font-size: 14px; font-family: monospace;">' + fields.invoiceNumber + '</td>' +
     '        </tr>' +
     '        <tr style="border-bottom: 1px solid #f1f5f9;">' +
     '          <td style="padding: 12px 8px; font-weight: 600; color: #64748b; font-size: 14px;">Vendor GSTIN</td>' +
-    '          <td style="padding: 12px 8px; font-weight: 700; color: #0f172a; font-size: 14px; font-family: monospace;">\\' + fields.vendorGst + '</td>' +
+    '          <td style="padding: 12px 8px; font-weight: 700; color: #0f172a; font-size: 14px; font-family: monospace;">' + fields.vendorGst + '</td>' +
     '        </tr>' +
     '        <tr style="border-bottom: 1px solid #f1f5f9;">' +
     '          <td style="padding: 12px 8px; font-weight: 600; color: #64748b; font-size: 14px;">Billing Period</td>' +
-    '          <td style="padding: 12px 8px; font-weight: 700; color: #0f172a; font-size: 14px;">\\' + fields.billingPeriod + '</td>' +
+    '          <td style="padding: 12px 8px; font-weight: 700; color: #0f172a; font-size: 14px;">' + fields.billingPeriod + '</td>' +
     '        </tr>' +
     '        <tr style="border-bottom: 1px solid #f1f5f9;">' +
     '          <td style="padding: 12px 8px; font-weight: 600; color: #64748b; font-size: 14px;">Invoice Amount</td>' +
-    '          <td style="padding: 12px 8px; font-weight: 700; color: #4f46e5; font-size: 15px;">₹ \\' + fields.invoiceAmount + '</td>' +
+    '          <td style="padding: 12px 8px; font-weight: 700; color: #4f46e5; font-size: 15px;">₹ ' + fields.invoiceAmount + '</td>' +
     '        </tr>' +
     '        <tr style="border-bottom: 1px solid #f1f5f9;">' +
     '          <td style="padding: 12px 8px; font-weight: 600; color: #64748b; font-size: 14px;">Paid Amount</td>' +
-    '          <td style="padding: 12px 8px; font-weight: 700; color: #16a34a; font-size: 15px;">₹ \\' + fields.paidAmount + '</td>' +
+    '          <td style="padding: 12px 8px; font-weight: 700; color: #16a34a; font-size: 15px;">₹ ' + fields.paidAmount + '</td>' +
     '        </tr>' +
     '        <tr style="border-bottom: 1px solid #f1f5f9;">' +
     '          <td style="padding: 12px 8px; font-weight: 600; color: #64748b; font-size: 14px;">CGST (9%)</td>' +
-    '          <td style="padding: 12px 8px; font-weight: 700; color: #0f172a; font-size: 14px;">₹ \\' + fields.cgst + '</td>' +
+    '          <td style="padding: 12px 8px; font-weight: 700; color: #0f172a; font-size: 14px;">₹ ' + fields.cgst + '</td>' +
     '        </tr>' +
     '        <tr>' +
     '          <td style="padding: 12px 8px; font-weight: 600; color: #64748b; font-size: 14px;">SGST (9%)</td>' +
-    '          <td style="padding: 12px 8px; font-weight: 700; color: #0f172a; font-size: 14px;">₹ \\' + fields.sgst + '</td>' +
+    '          <td style="padding: 12px 8px; font-weight: 700; color: #0f172a; font-size: 14px;">₹ ' + fields.sgst + '</td>' +
     '        </tr>' +
     '      </tbody>' +
     '    </table>' +
