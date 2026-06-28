@@ -65,8 +65,8 @@ async function runAirtelAutomation() {
   
   // 4. Scan Gmail for the Statement and the Receipt
   Logger.log("Active scanning window open. Searching Gmail...");
-  var billSearchQuery = 'subject:("Airtel Postpaid Bill" OR "Airtel e-Bill" OR "Airtel Bill") has:attachment filename:pdf -label:' + GMAIL_LABEL_NAME;
-  var receiptSearchQuery = 'subject:("Airtel Payment" OR "Airtel Receipt" OR "Airtel Transaction") has:attachment filename:pdf -label:' + GMAIL_LABEL_NAME;
+  var billSearchQuery = 'subject:(Airtel Mobile Bill) has:attachment filename:pdf -label:' + GMAIL_LABEL_NAME;
+  var receiptSearchQuery = 'subject:(Airtel (Payment OR Receipt OR Transaction)) has:attachment filename:pdf -label:' + GMAIL_LABEL_NAME;
   
   if (AIRTEL_MOBILE) {
     billSearchQuery += ' AND "' + AIRTEL_MOBILE + '"';
@@ -306,6 +306,16 @@ function parseAirtelFields(billText, receiptText) {
  * Loads pdf-lib and merges Bill pages [3, 1, 4] with Receipt page [1]
  */
 async function mergePdfs(billBlob, receiptBlob, billingPeriod) {
+  // Polyfill global timer functions for libraries (like pdf-lib) that expect them in GAS
+  if (typeof setTimeout === 'undefined') {
+    globalThis.setTimeout = function(cb, ms) {
+      Utilities.sleep(ms || 0);
+      try { cb(); } catch (e) {}
+      return 0;
+    };
+    globalThis.clearTimeout = function() {};
+  }
+
   // Dynamically load pdf-lib UMD library
   var pdfLibUrl = "https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js";
   var pdfLibCode = UrlFetchApp.fetch(pdfLibUrl).getContentText();
