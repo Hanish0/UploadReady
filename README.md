@@ -45,3 +45,13 @@ Reimbursement files contain sensitive personal details (bills, payment types, ph
 - **PDF Extraction**: [pdfjs-dist](https://github.com/mozilla/pdf.js) (Mozilla PDF Reader)
 - **PDF Manipulation**: [pdf-lib](https://pdf-lib.js.org/) (Page-level assembly & merging)
 - **Hosting & CI/CD**: [GitHub Pages](https://pages.github.com/) + [GitHub Actions](https://github.com/features/actions)
+
+---
+
+## 🚀 Quick Deploy (Cloud Auto-Pilot)
+
+1. Open **[Google Apps Script](https://script.google.com)** and click **New Project**.
+2. Copy your customized script from the **UploadReady** UI and paste it into the editor, replacing the default placeholder code. Click the **Save** floppy icon.
+3. Click the **Run** button at the top, selecting `runAirtelAutomation`. Click **Review Permissions**, select your Google Account, click **Advanced** &rarr; **Go to Untitled project (unsafe)**, and click **Allow** to authorize Gmail and Google Drive access. *(Note: This manual run must be completed once to authorize the script).*
+4. Navigate to the clock icon (**Triggers**) on the left sidebar, click **Add Trigger** (bottom right), and configure it to run `runAirtelAutomation` as a **Time-driven daily timer** (e.g., between 8 AM and 9 AM).
+
