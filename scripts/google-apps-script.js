@@ -37,7 +37,7 @@ var DRIVE_QUEUE_FOLDER = "UploadReady_Queue";
 // ==========================================
 // MAIN AUTOMATION ENTRY POINT
 // ==========================================
-function runAirtelAutomation() {
+async function runAirtelAutomation() {
   Logger.log("Airtel Automation run started: " + new Date().toString());
   
   // 1. Process anything in the queue first if schedule conditions are met
@@ -110,7 +110,7 @@ function runAirtelAutomation() {
   
   // 6. Load pdf-lib and merge the documents
   Logger.log("Loading pdf-lib to merge document pages...");
-  var mergedBlob = mergePdfs(billBlob, receiptBlob, extractedFields.billingPeriod);
+  var mergedBlob = await mergePdfs(billBlob, receiptBlob, extractedFields.billingPeriod);
   
   // 7. Determine transmission and save/queue
   var isImmediate = typeof SCHEDULE_DAY === 'string' && SCHEDULE_DAY.toLowerCase() === 'immediate';
@@ -305,7 +305,7 @@ function parseAirtelFields(billText, receiptText) {
 /**
  * Loads pdf-lib and merges Bill pages [3, 1, 4] with Receipt page [1]
  */
-function mergePdfs(billBlob, receiptBlob, billingPeriod) {
+async function mergePdfs(billBlob, receiptBlob, billingPeriod) {
   // Dynamically load pdf-lib UMD library
   var pdfLibUrl = "https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js";
   var pdfLibCode = UrlFetchApp.fetch(pdfLibUrl).getContentText();
@@ -320,38 +320,31 @@ function mergePdfs(billBlob, receiptBlob, billingPeriod) {
   var billBytes = new Uint8Array(billBlob.getBytes());
   var receiptBytes = new Uint8Array(receiptBlob.getBytes());
   
-  // Run async merger mapping to a synchronous-looking execution (GAS supports modern promises)
-  var mergePromise = (async function() {
-    var mergedPdf = await PDFDocument.create();
-    var billDoc = await PDFDocument.load(billBytes);
-    var receiptDoc = await PDFDocument.load(receiptBytes);
-    
-    var billPageCount = billDoc.getPageCount();
-    var receiptPageCount = receiptDoc.getPageCount();
-    
-    // Copy Bill Page 3 (index 2), Page 1 (index 0), Page 4 (index 3)
-    var billPagesToCopy = [];
-    if (billPageCount >= 3) billPagesToCopy.push(2);
-    if (billPageCount >= 1) billPagesToCopy.push(0);
-    if (billPageCount >= 4) billPagesToCopy.push(3);
-    
-    if (billPagesToCopy.length > 0) {
-      var copiedBillPages = await mergedPdf.copyPages(billDoc, billPagesToCopy);
-      copiedBillPages.forEach(function(page) { mergedPdf.addPage(page); });
-    }
-    
-    // Copy Receipt Page 1 (index 0)
-    if (receiptPageCount >= 1) {
-      var copiedReceiptPages = await mergedPdf.copyPages(receiptDoc, [0]);
-      copiedReceiptPages.forEach(function(page) { mergedPdf.addPage(page); });
-    }
-    
-    var mergedBytes = await mergedPdf.save();
-    return mergedBytes;
-  })();
+  var mergedPdf = await PDFDocument.create();
+  var billDoc = await PDFDocument.load(billBytes);
+  var receiptDoc = await PDFDocument.load(receiptBytes);
   
-  // Wait for the asynchronous promise to resolve
-  var outputBytes = mergePromise.valueOf();
+  var billPageCount = billDoc.getPageCount();
+  var receiptPageCount = receiptDoc.getPageCount();
+  
+  // Copy Bill Page 3 (index 2), Page 1 (index 0), Page 4 (index 3)
+  var billPagesToCopy = [];
+  if (billPageCount >= 3) billPagesToCopy.push(2);
+  if (billPageCount >= 1) billPagesToCopy.push(0);
+  if (billPageCount >= 4) billPagesToCopy.push(3);
+  
+  if (billPagesToCopy.length > 0) {
+    var copiedBillPages = await mergedPdf.copyPages(billDoc, billPagesToCopy);
+    copiedBillPages.forEach(function(page) { mergedPdf.addPage(page); });
+  }
+  
+  // Copy Receipt Page 1 (index 0)
+  if (receiptPageCount >= 1) {
+    var copiedReceiptPages = await mergedPdf.copyPages(receiptDoc, [0]);
+    copiedReceiptPages.forEach(function(page) { mergedPdf.addPage(page); });
+  }
+  
+  var mergedBytes = await mergedPdf.save();
   
   // Parse filename
   var filename = "Airtel_Reimbursement.pdf";
@@ -366,7 +359,7 @@ function mergePdfs(billBlob, receiptBlob, billingPeriod) {
     filename = "Airtel_Reimbursement_" + months[now.getMonth()] + now.getFullYear() + ".pdf";
   }
   
-  return Utilities.newBlob(outputBytes, "application/pdf", filename);
+  return Utilities.newBlob(mergedBytes, "application/pdf", filename);
 }
 
 /**

@@ -10,7 +10,8 @@ import {
   Download,
   Clock,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Play
 } from 'lucide-react';
 
 interface CloudPanelProps {
@@ -71,7 +72,7 @@ var DRIVE_QUEUE_FOLDER = "UploadReady_Queue";
 // ==========================================
 // MAIN AUTOMATION ENTRY POINT
 // ==========================================
-function runAirtelAutomation() {
+async function runAirtelAutomation() {
   Logger.log("Airtel Automation run started: " + new Date().toString());
   
   // 1. Process anything in the queue first if schedule conditions are met
@@ -144,7 +145,7 @@ function runAirtelAutomation() {
   
   // 6. Load pdf-lib and merge the documents
   Logger.log("Loading pdf-lib to merge document pages...");
-  var mergedBlob = mergePdfs(billBlob, receiptBlob, extractedFields.billingPeriod);
+  var mergedBlob = await mergePdfs(billBlob, receiptBlob, extractedFields.billingPeriod);
   
   // 7. Determine transmission and save/queue
   var isImmediate = typeof SCHEDULE_DAY === 'string' && SCHEDULE_DAY.toLowerCase() === 'immediate';
@@ -312,7 +313,7 @@ function parseAirtelFields(billText, receiptText) {
   return fields;
 }
 
-function mergePdfs(billBlob, receiptBlob, billingPeriod) {
+async function mergePdfs(billBlob, receiptBlob, billingPeriod) {
   var pdfLibUrl = "https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js";
   var pdfLibCode = UrlFetchApp.fetch(pdfLibUrl).getContentText();
   eval(pdfLibCode);
@@ -321,34 +322,29 @@ function mergePdfs(billBlob, receiptBlob, billingPeriod) {
   var billBytes = new Uint8Array(billBlob.getBytes());
   var receiptBytes = new Uint8Array(receiptBlob.getBytes());
   
-  var mergePromise = (async function() {
-    var mergedPdf = await PDFDocument.create();
-    var billDoc = await PDFDocument.load(billBytes);
-    var receiptDoc = await PDFDocument.load(receiptBytes);
-    
-    var billPageCount = billDoc.getPageCount();
-    var receiptPageCount = receiptDoc.getPageCount();
-    
-    var billPagesToCopy = [];
-    if (billPageCount >= 3) billPagesToCopy.push(2);
-    if (billPageCount >= 1) billPagesToCopy.push(0);
-    if (billPageCount >= 4) billPagesToCopy.push(3);
-    
-    if (billPagesToCopy.length > 0) {
-      var copiedBillPages = await mergedPdf.copyPages(billDoc, billPagesToCopy);
-      copiedBillPages.forEach(function(page) { mergedPdf.addPage(page); });
-    }
-    
-    if (receiptPageCount >= 1) {
-      var copiedReceiptPages = await mergedPdf.copyPages(receiptDoc, [0]);
-      copiedReceiptPages.forEach(function(page) { mergedPdf.addPage(page); });
-    }
-    
-    var mergedBytes = await mergedPdf.save();
-    return mergedBytes;
-  })();
+  var mergedPdf = await PDFDocument.create();
+  var billDoc = await PDFDocument.load(billBytes);
+  var receiptDoc = await PDFDocument.load(receiptBytes);
   
-  var outputBytes = mergePromise.valueOf();
+  var billPageCount = billDoc.getPageCount();
+  var receiptPageCount = receiptDoc.getPageCount();
+  
+  var billPagesToCopy = [];
+  if (billPageCount >= 3) billPagesToCopy.push(2);
+  if (billPageCount >= 1) billPagesToCopy.push(0);
+  if (billPageCount >= 4) billPagesToCopy.push(3);
+  
+  if (billPagesToCopy.length > 0) {
+    var copiedBillPages = await mergedPdf.copyPages(billDoc, billPagesToCopy);
+    copiedBillPages.forEach(function(page) { mergedPdf.addPage(page); });
+  }
+  
+  if (receiptPageCount >= 1) {
+    var copiedReceiptPages = await mergedPdf.copyPages(receiptDoc, [0]);
+    copiedReceiptPages.forEach(function(page) { mergedPdf.addPage(page); });
+  }
+  
+  var mergedBytes = await mergedPdf.save();
   
   var filename = "Airtel_Reimbursement.pdf";
   var endMonthYearMatch = billingPeriod.match(/-\\s*\\d{1,2}\\s+([a-zA-Z]{3,9})\\s+(\\d{2,4})/);
@@ -362,7 +358,7 @@ function mergePdfs(billBlob, receiptBlob, billingPeriod) {
     filename = "Airtel_Reimbursement_" + months[now.getMonth()] + now.getFullYear() + ".pdf";
   }
   
-  return Utilities.newBlob(outputBytes, "application/pdf", filename);
+  return Utilities.newBlob(mergedBytes, "application/pdf", filename);
 }
 
 function sendReimbursementEmail(recipientEmail, fields, pdfBlob) {
@@ -784,7 +780,7 @@ function getOrCreateFolder(name) {
           <div>
             <h2 className="panel-title">Deployment Guide</h2>
             <p className="panel-subtitle">
-              Follow these three actionable steps to deploy the background automation script in your secure Google Account.
+              Follow these four actionable steps to deploy and run the background automation script inside your secure Google Account.
             </p>
           </div>
 
@@ -793,9 +789,9 @@ function getOrCreateFolder(name) {
             <div className="deploy-card">
               <div className="step-node-connector">1</div>
               <div className="deploy-card-body">
-                <h3>Open Apps Script Portal</h3>
+                <h3>Open Apps Script</h3>
                 <p>
-                  Access the Google Apps Script developer dashboard. It runs scripts natively on Google servers.
+                  Access the Google Apps Script developer dashboard. It runs scripts natively on secure Google Cloud servers.
                 </p>
                 <a 
                   href="https://script.google.com" 
@@ -814,7 +810,7 @@ function getOrCreateFolder(name) {
               <div className="deploy-card-body">
                 <h3>Paste & Save Code</h3>
                 <p>
-                  Click <strong>New Project</strong>, replace any default placeholder text with your customized script, and click save.
+                  Click <strong>New Project</strong>, replace all default code with your customized script, and click the <strong>Save</strong> icon.
                 </p>
                 <button 
                   onClick={handleCopyCode} 
@@ -837,14 +833,35 @@ function getOrCreateFolder(name) {
             <div className="deploy-card">
               <div className="step-node-connector">3</div>
               <div className="deploy-card-body">
-                <h3>Schedule Daily Trigger</h3>
+                <h3>Run & Authorize</h3>
                 <p>
-                  Click the Clock icon (Triggers menu) on the left sidebar. Add a new trigger running <code>runAirtelAutomation</code> on a <strong>Time-driven daily timer</strong>.
+                  Click the <strong>Run</strong> button at the top (play icon). Click <strong>Review Permissions</strong>, select your Google Account, click <strong>Advanced</strong> &rarr; <strong>Go to Untitled project (unsafe)</strong>, and select <strong>Allow</strong> to grant required Gmail/Drive access.
                 </p>
                 <div className="trigger-badge">
-                  <Clock size={12} /> Time-driven daily run
+                  <Play size={12} /> Run manually once
                 </div>
               </div>
+            </div>
+
+            {/* Step 4 Card */}
+            <div className="deploy-card">
+              <div className="step-node-connector">4</div>
+              <div className="deploy-card-body">
+                <h3>Create Daily Trigger</h3>
+                <p>
+                  Click the clock icon (<strong>Triggers</strong>) on the left sidebar. Add a trigger to run <code>runAirtelAutomation</code> <strong>Time-driven daily</strong>.
+                </p>
+                <div className="trigger-badge">
+                  <Clock size={12} /> Time-driven daily trigger
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="deploy-tip-banner animate-scale-up">
+            <span className="banner-icon">💡</span>
+            <div>
+              <strong>Immediate Testing Tip:</strong> When running the script manually, if your execution log says <em>"Current date is outside the billing window. Skipping scan..."</em> (normal behavior outside the billing window), temporarily change <code>BILL_GENERATION_DAY</code> to today's date in your script settings to verify it runs and processes your emails.
             </div>
           </div>
         </div>
